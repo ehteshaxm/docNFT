@@ -10,6 +10,12 @@ import {
   Text,
   Button,
 } from '@chakra-ui/react';
+import { Web3Storage } from 'web3.storage';
+import { uid } from 'uid';
+import axios from 'axios';
+import { useAccount, useNetwork } from 'wagmi';
+import { app, firestore } from '../../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 const index = () => {
   const aadhaar = {
@@ -35,6 +41,44 @@ const index = () => {
     vtc_name: 'Mumbai',
     xml_base64: 'UEsDBBQACQAIAEFdclYAAAAAAAAAAAAAAAAjAAAAb2ZmbGluZ',
   };
+
+  const account = useAccount();
+
+  const web3Storage = new Web3Storage({
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg2YWM2RDE0Njk0NzM1OTBBM0NGYzRFOEJlQjRDNjY0NmVhYTBCREIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzkxNTgzODM4MjAsIm5hbWUiOiJteVRva2VuIn0.lvMITWk8W1z_qcVzdv3GUM7SJkI-MOMMVt6RptOlQbU',
+  });
+
+  // (async function retrieveFiles(cid) {
+  //   const res = await web3Storage.get(
+  //     'bafybeifijxr5gsg3vqmeiq2uibacgzkb5fub36nrfelajbyjg2gromlzz4'
+  //   );
+  //   console.log(`Got a response! [${res.status}] ${res.statusText}`);
+  //   if (!res.ok) {
+  //     throw new Error(
+  //       `failed to get ${cid} - [${res.status}] ${res.statusText}`
+  //     );
+  //   }
+
+  //   // unpack File objects from the response
+  //   const files = await res.files();
+  //   console.log(files);
+  //   for (const file of files) {
+  //     console.log(JSON.stringify(file));
+  //   }
+  // })();
+
+  (async function subdoc() {
+    await setDoc(doc(firestore, 'users', account.address), {
+      aadhaar: 'bafybeifijxr5gsg3vqmeiq2uibacgzkb5fub36nrfelajbyjg2gromlzz4',
+    });
+  })();
+
+  axios
+    .get(
+      'https://bafybeifqko6pvdmwrbsi6zjytlgekq5r6y73y3xt6gbrahnl2dqtppgmza.ipfs.dweb.link/b1379a516597'
+    )
+    .then((res) => console.log(res.data));
 
   return (
     <div className='min-h-screen flex justify-center items-center flex-col'>
@@ -74,6 +118,27 @@ const index = () => {
             </CardBody>
           </Stack>
         </Card>
+        <div className='flex justify-center items-center mt-5'>
+          <Button
+            colorScheme='blackAlpha'
+            className='ml-4'
+            onClick={() => getAadhaarData()}
+          >
+            Claim NFT
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 24 24'
+              fill='currentColor'
+              className='w-6 h-6 ml-3'
+            >
+              <path
+                fillRule='evenodd'
+                d='M15.75 2.25H21a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V4.81L8.03 17.03a.75.75 0 01-1.06-1.06L19.19 3.75h-3.44a.75.75 0 010-1.5zm-10.5 4.5a1.5 1.5 0 00-1.5 1.5v10.5a1.5 1.5 0 001.5 1.5h10.5a1.5 1.5 0 001.5-1.5V10.5a.75.75 0 011.5 0v8.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V8.25a3 3 0 013-3h8.25a.75.75 0 010 1.5H5.25z'
+                clipRule='evenodd'
+              />
+            </svg>
+          </Button>
+        </div>
       </div>
     </div>
   );
