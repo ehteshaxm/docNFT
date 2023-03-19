@@ -19,8 +19,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { app, firestore } from '../firebase';
-import { doc as fdoc, setDoc as setfdoc } from 'firebase/firestore';
+import { doc as fdoc, setDoc as setfdoc, updateDoc } from 'firebase/firestore';
 import { Web3Storage } from 'web3.storage';
+import { doc, getDoc } from 'firebase/firestore';
 
 const index = () => {
   const [accountExists, setAccountExists] = useState(false);
@@ -118,7 +119,7 @@ const index = () => {
           status: 'success',
         });
 
-        setAadhaarIPFS();
+        setAadhaarIPFS(response.data.data.aadhaar_data);
       })
       .catch(function (error) {
         setLoading(false);
@@ -128,25 +129,35 @@ const index = () => {
     setAadhaarData({});
   }
 
-  async function setAadhaarIPFS() {
+  async function setAadhaarIPFS(aadhaarData) {
     try {
-      const fileName = account.address;
+      const fileName = `aadhaar${account.address}`;
       const buffer = Buffer.from(JSON.stringify(aadhaarData));
       const newFile = new File([buffer], account.address, {
         type: 'object',
       });
       const rootCid = await web3Storage.put([newFile], {
-        name: account.address,
+        name: fileName,
       });
-      console.log(`https://${rootCid}.ipfs.dweb.link/${fileName}`);
+      console.log(`https://${rootCid}.ipfs.w3s.link/${account.address}`);
 
-      await setfdoc(
-        fdoc(firestore, 'users', account.address),
-        {
-          aadhaar: `https://${rootCid}.ipfs.dweb.link/${fileName}`,
-        },
-        { merge: true }
-      );
+      const docRef = fdoc(firestore, 'users', account.address);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log('Document data:', docSnap.data());
+        await updateDoc(
+          fdoc(firestore, 'users', account.address),
+          {
+            aadhaar: `https://${rootCid}.ipfs.w3s.link/${account.address}`,
+          },
+          { merge: true }
+        );
+      } else {
+        await setfdoc(fdoc(firestore, 'users', account.address), {
+          aadhaar: `https://${rootCid}.ipfs.w3s.link/${account.address}`,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -181,32 +192,47 @@ const index = () => {
           isClosable: true,
           status: 'success',
         });
-        setLicenseIPFS();
+        setLicenseIPFS(response.data.data.driving_license_data);
       })
       .catch(function (error) {
         console.error(error);
       });
   }
 
-  async function setLicenseIPFS() {
+  async function setLicenseIPFS(licenseData) {
     try {
-      const fileName = account.address;
+      const fileName = `license${account.address}`;
       const buffer = Buffer.from(JSON.stringify(licenseData));
       const newFile = new File([buffer], account.address, {
         type: 'object',
       });
       const rootCid = await web3Storage.put([newFile], {
-        name: account.address,
+        name: fileName,
       });
-      console.log(`https://${rootCid}.ipfs.dweb.link/${fileName}`);
+      // console.log(`https://${rootCid}.ipfs.dweb.link/${fileName}`);
 
-      await setfdoc(
-        fdoc(firestore, 'users', account.address),
-        {
-          license: `https://${rootCid}.ipfs.dweb.link/${fileName}`,
-        },
-        { merge: true }
+      window.open(
+        `https://${rootCid}.ipfs.dweb.link/${account.address}`,
+        '_blank'
       );
+
+      const docRef = fdoc(firestore, 'users', account.address);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log('Document data:', docSnap.data());
+        await updateDoc(
+          fdoc(firestore, 'users', account.address),
+          {
+            license: `https://${rootCid}.ipfs.w3s.link/${account.address}`,
+          },
+          { merge: true }
+        );
+      } else {
+        await setfdoc(fdoc(firestore, 'users', account.address), {
+          license: `https://${rootCid}.ipfs.dweb.link/${account.address}`,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
