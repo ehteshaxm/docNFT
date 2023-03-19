@@ -348,7 +348,7 @@ const index = () => {
             style={{ width: '600px' }}
             className='flex justify-end items-center font-bold text-3xl mb-1 relative z-10 mt-20'
           >
-            <span className='font-semibold mr-5'>powerd by</span>
+            <span className='font-semibold mr-5'>powered by</span>
             <Image src='/verb.png' className='w-8 mr-2' />
             VERBWIRE
           </div>
