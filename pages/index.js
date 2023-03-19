@@ -393,7 +393,12 @@ const index = () => {
             </div>
           </nav>
 
-          <div className='absolute -top-16 w-full h-80 filter blur-3xl bg-gradient-to-r from-indigo-200 to-blue-300'></div>
+          {account.address !== undefined && (
+            <div className='absolute -top-16 w-full h-80 filter blur-3xl bg-gradient-to-r from-lime-400 to-lime-500 animate-pulse'></div>
+          )}
+          {account.address === undefined && (
+            <div className='absolute -top-16 w-full h-80 filter blur-3xl bg-gradient-to-r from-red-500 to-orange-500 animate-pulse'></div>
+          )}
           <div className='w-20 h-20 fixed bg-stone-800 rounded-full bottom-5 right-5 flex justify-center items-center'>
             <Popover>
               <PopoverTrigger>
