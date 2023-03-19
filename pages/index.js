@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Highlight } from '@chakra-ui/react';
 import { Web3Button, Web3NetworkSwitch } from '@web3modal/react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useNetwork, useDisconnect } from 'wagmi';
 import { Input, Select } from '@chakra-ui/react';
 import { Button, ButtonGroup } from '@chakra-ui/react';
 import { PinInput, PinInputField, HStack } from '@chakra-ui/react';
@@ -64,11 +64,11 @@ const index = () => {
   const [loading, setLoading] = useState(false);
   const [issueData, setIssueData] = useState({});
 
+  const { disconnect } = useDisconnect();
+
   useEffect(() => {
-    if (account.address !== null || account.address !== undefined) {
-      setAccountExists(true);
-    }
-  }, [account.address]);
+    disconnect();
+  }, []);
 
   async function getAadhaarOTP() {
     setLoading(true);
